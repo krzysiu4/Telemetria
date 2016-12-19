@@ -24,18 +24,14 @@ namespace Telemetria
     public partial class TelemetriaUI : Form
     {
 
-        private CookieContainer cookies;                 // 
-        private string interopURL;                      // Adres serwera sędziów
-
-        public class Account
-        {
-            public string imie { get; set; }
-            public bool id { get; set; }
-        }
-        private static System.Timers.Timer aTimer;
+        private CookieContainer cookies = new CookieContainer();     // 
+        private string interopURL;
+        bool telemetryThreadStop = false;
+        // Adres serwera sędziów
+               
+       // private static System.Timers.Timer aTimer;
 
         private TelemPlugin plugin;                     // Uchwyt do danych z MissionPlannera
-
         public TelemetriaUI(TelemPlugin plugin)
         {
             this.plugin = plugin; 
@@ -48,6 +44,7 @@ namespace Telemetria
 
         }
 
+
         // Logowanie do serwera sędziów
         private void buttonLogin_Click(object sender, EventArgs e)
         {
@@ -59,14 +56,14 @@ namespace Telemetria
             string password = textBoxPassword.Text;
             string myParameters = "username=" + username + "&" + "password=" + password;
 
-            using (CookieWebClient wc = new CookieWebClient(new CookieContainer()))
+            using (CookieWebClient wc = new CookieWebClient(cookies))
             {
                 wc.BaseAddress = url;
                 wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded"; // Potrzebne
                 string httpResult = wc.UploadString(uri, myParameters);
-                cookies = wc.CookieContainer;                                         // Zapisuje otrzymane cookies
+                 cookies = wc.CookieContainer;                                         // Zapisuje otrzymane cookies
                 textBoxHTTPResult.Text = httpResult;
-                textBoxHTTPResult.Text += "\nCookies: " + cookies.GetCookieHeader(new Uri(url + uri)); // Wyświetla cookies
+              //  textBoxHTTPResult.Text += "\nCookies: " + cookies.GetCookieHeader(new Uri(url + uri)); // Wyświetla cookies
             }
         }
 
@@ -98,94 +95,107 @@ namespace Telemetria
             }
         }
 
+        public void updateTextBoxTelem(string result)
+        {
+            textBoxTelem.Text = result;
+        }
+
         // Wyslanie telemetrii
-        private void buttonWyslijTelemetrie_Click(object sender, EventArgs e)
+
+        private void buttonWysylajTelemetrie_Click(object sender, EventArgs e)
         {
-            //
-            string username = textBoxUsername.Text;
-            string password = textBoxPassword.Text;
-            string url = textBoxURL.Text;
-            string myParameters1 = "username=" + username + "&" + "password=" + password;
-            //
-
-            //  string url = interopURL;
-            string uri1 = "/api/login";
-            string uri = "/api/telemetry";
-
-            double latitude = plugin.Host.cs.lat;
-            double longitude = plugin.Host.cs.lng;
-            double altitude = plugin.Host.cs.alt;
-            double course = plugin.Host.cs.groundcourse;
-
-
-            string myParameters = "latitude=" + latitude.ToString() + "&" +
-                                  "longitude=" + longitude.ToString() + "&" +
-                                  "altitude_msl=" + altitude.ToString() + "&" +
-                                  "uas_heading=" + course.ToString();
-
-            using (CookieWebClient wc = new CookieWebClient(new CookieContainer()))
+            Thread myThread = new Thread(() =>
             {
-                wc.BaseAddress = url;            
-                wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-                string httpResult1 = wc.UploadString(uri1, myParameters1);                       // Ponowne logowanie
-                wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded"; //  Za każdym razem trzeba dodać
-                string httpResult = wc.UploadString(uri, myParameters);                          // Zmienić na zapytania async
-                textBoxHTTPResult.Text = httpResult1 + "\n" + httpResult ;
-               
-            }
-        }
+                int cnt = 10;
+                Thread.CurrentThread.IsBackground = true;
+                string url = interopURL;
+                string uri = "/api/telemetry";
+                string httpResult = "Error: Bad URL or not logged in";
+                double latitude, longitude, altitude, course;
 
-        private void buttonStartTelem_Click(object sender, EventArgs e)
-        {
-            double period = 1 / double.Parse(textBoxTelemHz.Text);
-            aTimer = new System.Timers.Timer(period);
-            aTimer.Elapsed += OnTimedEvent;
-            aTimer.AutoReset = false;                 // Do testow zatrzymany
-            aTimer.Enabled = true;
-        }
-
-        private void updateTelemBox(string text)
-        {
-            textBoxTelem.Text = text;
-        }
-
-        private void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
-        {
-            // Działa jako osobny wątek
-
-            double latitude = plugin.Host.cs.lat;
-            double longitude = plugin.Host.cs.lng;
-            double altitude = plugin.Host.cs.alt;
-            double course = plugin.Host.cs.groundcourse;
-            string arg = latitude.ToString() + " " + longitude.ToString() + " " + altitude.ToString() + " " + course.ToString();
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = @"C:\Users\Krzysiu\AppData\Local\Programs\Python\Python35-32\python.exe";
-            start.Arguments = string.Format("{0} {1}", @"Skrypty\auvsi_mp.py", arg);
-            start.UseShellExecute = false;
-            start.RedirectStandardOutput = true;
-            using (Process process = Process.Start(start))
-            {
-                using (StreamReader reader = process.StandardOutput)
+                while (true)
                 {
-                    string result = reader.ReadToEnd();
-                    if (this.IsDisposed) return;
-                    this.Invoke(new MethodInvoker(delegate ()
-                    {
-                        updateTelemBox(result);
+                    latitude = plugin.Host.cs.lat;
+                    longitude = plugin.Host.cs.lng;
+                    altitude = plugin.Host.cs.alt;
+                    course = plugin.Host.cs.groundcourse;
 
-                    }));
-               
+
+                    string myParameters = "latitude=" + latitude.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +          // Kropki zamiast przecinków
+                                          "longitude=" + longitude.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +        // Kropki zamiast przecinków
+                                          "altitude_msl=" + altitude.ToString(System.Globalization.CultureInfo.InvariantCulture) + "&" +      // Kropki zamiast przecinków
+                                          "uas_heading=" + course.ToString(System.Globalization.CultureInfo.InvariantCulture);                // Kropki zamiast przecinków
+
+
+                    using (CookieWebClient wc = new CookieWebClient(cookies))
+                    {
+                        try
+                        {
+                            wc.BaseAddress = url;
+                            wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded"; //  Za każdym razem trzeba dodać
+                            httpResult = wc.UploadString(uri, myParameters);                          // 
+                        }
+                        catch (WebException)
+                        {
+                            telemetryThreadStop = true;
+                        }
+                    }
+
+                    cnt++;
+                    if (cnt >= 10)              // Co dziesiąte wysłanie telemetri wyświetla komunikat
+                    {
+                        cnt = 0;
+                        this.Invoke(new MethodInvoker(delegate ()
+                        {
+                            updateTextBoxTelem(httpResult);
+
+                        }));
+                    }
+
+                    if (telemetryThreadStop)        
+                        break;                                      // Kończy wątek
+             
                 }
+            });
+
+            if (buttonWysylajTelemetrie.Text == "START")
+            {
+                if (myThread.IsAlive == true)
+                    return;
+
+                buttonWysylajTelemetrie.Text = "STOP";
+                buttonWysylajTelemetrie.BackColor = Color.Red;
+                telemetryThreadStop = false;
+                myThread.Start();
+            }
+            else if (buttonWysylajTelemetrie.Text == "STOP")
+            {
+                buttonWysylajTelemetrie.Text = "START";
+                buttonWysylajTelemetrie.BackColor = Color.Green;
+                telemetryThreadStop = true;
+            }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            if (e.CloseReason == CloseReason.WindowsShutDown) return;
+
+            // Confirm user wants to close
+            switch (MessageBox.Show(this, "Are you sure you want to close?", "Closing", MessageBoxButtons.YesNo))
+            {
+                case DialogResult.No:
+                    e.Cancel = true;
+                    break;
+                default:
+                    telemetryThreadStop = true;
+                    break;
             }
         }
 
 
 
-        private void buttonAuvsi_Click(object sender, EventArgs e)
-        {
-            timerTelem.Start();
-        }
 
-     
     }
 }
