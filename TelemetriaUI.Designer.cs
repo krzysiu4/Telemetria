@@ -28,20 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.textBoxURL = new System.Windows.Forms.TextBox();
             this.buttonLogin = new System.Windows.Forms.Button();
-            this.buttonStartTelem = new System.Windows.Forms.Button();
-            this.textBoxTelem = new System.Windows.Forms.TextBox();
-            this.textBoxTelemHz = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.timerTelem = new System.Windows.Forms.Timer(this.components);
             this.textBoxHTTPResult = new System.Windows.Forms.TextBox();
             this.textBoxUsername = new System.Windows.Forms.TextBox();
             this.textBoxPassword = new System.Windows.Forms.TextBox();
             this.buttonPobierzMisje = new System.Windows.Forms.Button();
             this.buttonPobierzPrzeszkody = new System.Windows.Forms.Button();
-            this.buttonWyslijTelemetrie = new System.Windows.Forms.Button();
+            this.buttonWysylajTelemetrie = new System.Windows.Forms.Button();
+            this.textBoxTelem = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBoxURL
@@ -61,43 +57,6 @@
             this.buttonLogin.Text = "Login";
             this.buttonLogin.UseVisualStyleBackColor = true;
             this.buttonLogin.Click += new System.EventHandler(this.buttonLogin_Click);
-            // 
-            // buttonStartTelem
-            // 
-            this.buttonStartTelem.Location = new System.Drawing.Point(392, 143);
-            this.buttonStartTelem.Name = "buttonStartTelem";
-            this.buttonStartTelem.Size = new System.Drawing.Size(112, 27);
-            this.buttonStartTelem.TabIndex = 13;
-            this.buttonStartTelem.Text = "Start auvsi_mp.py";
-            this.buttonStartTelem.UseVisualStyleBackColor = true;
-            this.buttonStartTelem.Click += new System.EventHandler(this.buttonStartTelem_Click);
-            // 
-            // textBoxTelem
-            // 
-            this.textBoxTelem.Location = new System.Drawing.Point(391, 216);
-            this.textBoxTelem.Multiline = true;
-            this.textBoxTelem.Name = "textBoxTelem";
-            this.textBoxTelem.Size = new System.Drawing.Size(130, 113);
-            this.textBoxTelem.TabIndex = 14;
-            this.textBoxTelem.Text = "Nietesttowane: alternatywnie można wywoływać skrypty w pythonie do przesylania te" +
-    "lemetriii- wymaga podania odpowiednich sciezek w kodzie.";
-            // 
-            // textBoxTelemHz
-            // 
-            this.textBoxTelemHz.Location = new System.Drawing.Point(430, 186);
-            this.textBoxTelemHz.Name = "textBoxTelemHz";
-            this.textBoxTelemHz.Size = new System.Drawing.Size(36, 20);
-            this.textBoxTelemHz.TabIndex = 15;
-            this.textBoxTelemHz.Text = "10";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(472, 189);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(20, 13);
-            this.label3.TabIndex = 16;
-            this.label3.Text = "Hz";
             // 
             // textBoxHTTPResult
             // 
@@ -143,31 +102,49 @@
             this.buttonPobierzPrzeszkody.UseVisualStyleBackColor = true;
             this.buttonPobierzPrzeszkody.Click += new System.EventHandler(this.buttonPobierzPrzeszkody_Click);
             // 
-            // buttonWyslijTelemetrie
+            // buttonWysylajTelemetrie
             // 
-            this.buttonWyslijTelemetrie.Location = new System.Drawing.Point(233, 122);
-            this.buttonWyslijTelemetrie.Name = "buttonWyslijTelemetrie";
-            this.buttonWyslijTelemetrie.Size = new System.Drawing.Size(97, 23);
-            this.buttonWyslijTelemetrie.TabIndex = 23;
-            this.buttonWyslijTelemetrie.Text = "Wyslij Telemetrie";
-            this.buttonWyslijTelemetrie.UseVisualStyleBackColor = true;
-            this.buttonWyslijTelemetrie.Click += new System.EventHandler(this.buttonWyslijTelemetrie_Click);
+            this.buttonWysylajTelemetrie.BackColor = System.Drawing.Color.Green;
+            this.buttonWysylajTelemetrie.Location = new System.Drawing.Point(411, 174);
+            this.buttonWysylajTelemetrie.Name = "buttonWysylajTelemetrie";
+            this.buttonWysylajTelemetrie.Size = new System.Drawing.Size(76, 23);
+            this.buttonWysylajTelemetrie.TabIndex = 23;
+            this.buttonWysylajTelemetrie.Text = "START";
+            this.buttonWysylajTelemetrie.UseVisualStyleBackColor = false;
+            this.buttonWysylajTelemetrie.Click += new System.EventHandler(this.buttonWysylajTelemetrie_Click);
+            // 
+            // textBoxTelem
+            // 
+            this.textBoxTelem.Location = new System.Drawing.Point(391, 216);
+            this.textBoxTelem.Multiline = true;
+            this.textBoxTelem.Name = "textBoxTelem";
+            this.textBoxTelem.Size = new System.Drawing.Size(130, 113);
+            this.textBoxTelem.TabIndex = 14;
+            this.textBoxTelem.Text = "Nietesttowane: alternatywnie można wywoływać skrypty w pythonie do przesylania te" +
+    "lemetriii- wymaga podania odpowiednich sciezek w kodzie.";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(421, 146);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(56, 13);
+            this.label1.TabIndex = 24;
+            this.label1.Text = "Telemetria";
             // 
             // TelemetriaUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(604, 367);
-            this.Controls.Add(this.buttonWyslijTelemetrie);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.buttonWysylajTelemetrie);
             this.Controls.Add(this.buttonPobierzPrzeszkody);
             this.Controls.Add(this.buttonPobierzMisje);
             this.Controls.Add(this.textBoxPassword);
             this.Controls.Add(this.textBoxUsername);
             this.Controls.Add(this.textBoxHTTPResult);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBoxTelemHz);
             this.Controls.Add(this.textBoxTelem);
-            this.Controls.Add(this.buttonStartTelem);
             this.Controls.Add(this.buttonLogin);
             this.Controls.Add(this.textBoxURL);
             this.Name = "TelemetriaUI";
@@ -181,17 +158,14 @@
         #endregion
         private System.Windows.Forms.TextBox textBoxURL;
         private System.Windows.Forms.Button buttonLogin;
-        private System.Windows.Forms.Button buttonStartTelem;
-        private System.Windows.Forms.TextBox textBoxTelem;
-        private System.Windows.Forms.TextBox textBoxTelemHz;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Timer timerTelem;
         private System.Windows.Forms.TextBox textBoxHTTPResult;
         private System.Windows.Forms.TextBox textBoxUsername;
         private System.Windows.Forms.TextBox textBoxPassword;
         private System.Windows.Forms.Button buttonPobierzMisje;
         private System.Windows.Forms.Button buttonPobierzPrzeszkody;
-        private System.Windows.Forms.Button buttonWyslijTelemetrie;
+        private System.Windows.Forms.Button buttonWysylajTelemetrie;
+        private System.Windows.Forms.TextBox textBoxTelem;
+        private System.Windows.Forms.Label label1;
     }
 }
 

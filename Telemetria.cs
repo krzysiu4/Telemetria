@@ -52,18 +52,11 @@ namespace Telemetria
         {
             form = new Telemetria.TelemetriaUI(this);
             form.Show();
-            loopratehz = 10;
-           
-        
+         //   loopratehz = 10;
+              
         }
         public override bool Loop()
-        {
- 
-            //form.Invoke(new MethodInvoker(delegate () {
-            //    month = form.getVal();
-            
-            //}));
-        
+        {        
             return true;
         }
         public override float loopratehz { get; set; }
