@@ -38,6 +38,10 @@
             this.buttonWysylajTelemetrie = new System.Windows.Forms.Button();
             this.textBoxTelem = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.buttonWyswietlPrzeszkody = new System.Windows.Forms.Button();
+            this.buttonUsunPrzeszkody = new System.Windows.Forms.Button();
+            this.buttonWyswietlPrzeszkodyRuchome = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBoxURL
@@ -132,11 +136,54 @@
             this.label1.TabIndex = 24;
             this.label1.Text = "Telemetria";
             // 
+            // buttonWyswietlPrzeszkody
+            // 
+            this.buttonWyswietlPrzeszkody.Location = new System.Drawing.Point(233, 122);
+            this.buttonWyswietlPrzeszkody.Name = "buttonWyswietlPrzeszkody";
+            this.buttonWyswietlPrzeszkody.Size = new System.Drawing.Size(128, 23);
+            this.buttonWyswietlPrzeszkody.TabIndex = 25;
+            this.buttonWyswietlPrzeszkody.Text = "Wyswietl Przeszkody";
+            this.buttonWyswietlPrzeszkody.UseVisualStyleBackColor = true;
+            this.buttonWyswietlPrzeszkody.Click += new System.EventHandler(this.buttonWyswietlPrzeszkody_Click);
+            // 
+            // buttonUsunPrzeszkody
+            // 
+            this.buttonUsunPrzeszkody.Location = new System.Drawing.Point(233, 78);
+            this.buttonUsunPrzeszkody.Name = "buttonUsunPrzeszkody";
+            this.buttonUsunPrzeszkody.Size = new System.Drawing.Size(128, 23);
+            this.buttonUsunPrzeszkody.TabIndex = 26;
+            this.buttonUsunPrzeszkody.Text = "Usun Przeszkody";
+            this.buttonUsunPrzeszkody.UseVisualStyleBackColor = true;
+            this.buttonUsunPrzeszkody.Click += new System.EventHandler(this.buttonUsunPrzeszkody_Click);
+            // 
+            // buttonWyswietlPrzeszkodyRuchome
+            // 
+            this.buttonWyswietlPrzeszkodyRuchome.Location = new System.Drawing.Point(411, 55);
+            this.buttonWyswietlPrzeszkodyRuchome.Name = "buttonWyswietlPrzeszkodyRuchome";
+            this.buttonWyswietlPrzeszkodyRuchome.Size = new System.Drawing.Size(134, 23);
+            this.buttonWyswietlPrzeszkodyRuchome.TabIndex = 27;
+            this.buttonWyswietlPrzeszkodyRuchome.Text = "START";
+            this.buttonWyswietlPrzeszkodyRuchome.UseVisualStyleBackColor = true;
+            this.buttonWyswietlPrzeszkodyRuchome.Click += new System.EventHandler(this.buttonWyswietlPrzeszkodyRuchome_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(431, 10);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(105, 13);
+            this.label2.TabIndex = 28;
+            this.label2.Text = "Przeszkody ruchome";
+            // 
             // TelemetriaUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(604, 367);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.buttonWyswietlPrzeszkodyRuchome);
+            this.Controls.Add(this.buttonUsunPrzeszkody);
+            this.Controls.Add(this.buttonWyswietlPrzeszkody);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.buttonWysylajTelemetrie);
             this.Controls.Add(this.buttonPobierzPrzeszkody);
@@ -149,7 +196,6 @@
             this.Controls.Add(this.textBoxURL);
             this.Name = "TelemetriaUI";
             this.Text = "Telemetria";
-            this.Load += new System.EventHandler(this.TelemetriaUI_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -166,6 +212,10 @@
         private System.Windows.Forms.Button buttonWysylajTelemetrie;
         private System.Windows.Forms.TextBox textBoxTelem;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button buttonWyswietlPrzeszkody;
+        private System.Windows.Forms.Button buttonUsunPrzeszkody;
+        private System.Windows.Forms.Button buttonWyswietlPrzeszkodyRuchome;
+        private System.Windows.Forms.Label label2;
     }
 }
 
