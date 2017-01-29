@@ -116,7 +116,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KlasyAUVSI.cs" />
     <Compile Include="CookieWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -176,9 +175,6 @@
       <Project>{a2e22272-95fe-47b6-b050-9ae7e2055bf5}</Project>
       <Name>MissionPlanner</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
