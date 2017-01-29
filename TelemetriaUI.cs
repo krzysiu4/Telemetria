@@ -25,22 +25,17 @@ namespace Telemetria
     public partial class TelemetriaUI : Form
     {
         
-        private CookieContainer cookies = new CookieContainer();     // 
-        private string interopURL;
-        bool telemetryThreadStop = false;
-        bool ruchomePrzeszkodyThreadStop = false;
+        private CookieContainer cookies = new CookieContainer();                 // Kontener na ciasteczka
+        private string interopURL;                                               // Adres serwera sędziów    
+        bool zalogowano = false;                                                 // Przechowuje informacje czy zalogowano
+        bool telemetryThreadStop = false;                                        // Sygnalizuje zakończenie wątku od przesyłania Telmetri
+        bool ruchomePrzeszkodyThreadStop = false;                                // Sygnalizuje zakończenie wątku od wyświetlania przeszkód
         GMapOverlay movingObstaclesOverlay = new GMapOverlay("MovingObstacles"); // Przeszkody ruchome
         GMapOverlay staticObstaclesOverlay = new GMapOverlay("StaticObstacles"); // Przeszkody nieruchome
-        GMapOverlay myMarkersOverlay = new GMapOverlay("MyMarkers"); // Markery z wartością wysokości
-        public class Obstacles
-        {
-
-        }
-        // Adres serwera sędziów
-               
+        GMapOverlay myMarkersOverlay = new GMapOverlay("MyMarkers");             // Markery z wartością wysokości            
        // private static System.Timers.Timer aTimer;
 
-        private TelemPlugin plugin;                     // Uchwyt do danych z MissionPlannera
+        private TelemPlugin plugin;                                              // Uchwyt do danych z MissionPlannera
         public TelemetriaUI(TelemPlugin plugin)
         {
             this.plugin = plugin; 
@@ -50,26 +45,25 @@ namespace Telemetria
             this.plugin.Host.FPGMapControl.Overlays.Add(myMarkersOverlay);
         }
 
-    
+
 
         // Logowanie do serwera sędziów
         private void buttonLogin_Click(object sender, EventArgs e)
         {
-
             string url = textBoxURL.Text;   
-            interopURL = url;                                          // Tylko ponowne zalogowanie zmienia url serwera
+            interopURL = url;                                                                    // Tylko ponowne zalogowanie zmienia url serwera
             string uri = "/api/login";
             string username = textBoxUsername.Text;
             string password = textBoxPassword.Text;
             string myParameters = "username=" + username + "&" + "password=" + password;
-
             using (CookieWebClient wc = new CookieWebClient(cookies))
             {
                 wc.BaseAddress = url;
                 wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded"; // Potrzebne
                 string httpResult = wc.UploadString(uri, myParameters);
-                 cookies = wc.CookieContainer;                                         // Zapisuje otrzymane cookies
+                cookies = wc.CookieContainer;                                                   // Zapisuje otrzymane cookies
                 textBoxHTTPResult.Text = httpResult;
+                zalogowano = true;
               //  textBoxHTTPResult.Text += "\nCookies: " + cookies.GetCookieHeader(new Uri(url + uri)); // Wyświetla cookies
             }
         }
@@ -77,9 +71,10 @@ namespace Telemetria
         // Pobieranie Misji
         private void buttonPobierzMisje_Click(object sender, EventArgs e)
         {
+            // Dodać sprawdzenie czy zalogowano
+
             string url = interopURL;
             string uri = "/api/missions";
-
             using (CookieWebClient wc = new CookieWebClient(cookies)) // Korzysta z cookies, zapisanych przy logowaniu
             {
                 wc.BaseAddress = url;
@@ -93,7 +88,6 @@ namespace Telemetria
         {
             string url = interopURL;
             string uri = "/api/obstacles";
-
             using (CookieWebClient wc = new CookieWebClient(cookies)) // Korzysta z cookies, zapisanych przy logowaniu
             {
                 wc.BaseAddress = url;
@@ -108,7 +102,6 @@ namespace Telemetria
         }
 
         // Wyslanie telemetrii
-
         private void buttonWysylajTelemetrie_Click(object sender, EventArgs e)
         {
             Thread myThread = new Thread(() =>
@@ -140,7 +133,7 @@ namespace Telemetria
                         {
                             wc.BaseAddress = url;
                             wc.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded"; //  Za każdym razem trzeba dodać
-                            httpResult = wc.UploadString(uri, myParameters);                          // 
+                            httpResult = wc.UploadString(uri, myParameters);                        
                         }
                         catch (WebException)
                         {
@@ -149,7 +142,7 @@ namespace Telemetria
                     }
 
                     cnt++;
-                    if (cnt >= 10)              // Co dziesiąte wysłanie telemetri wyświetla komunikat
+                    if (cnt >= 10)               // Co dziesiąte wysłanie telemetri wyświetla komunikat
                     {
                         cnt = 0;
                         this.Invoke(new MethodInvoker(delegate ()
@@ -189,28 +182,21 @@ namespace Telemetria
 
         public void wyswietlPrzeszkodyStacjonarne()
         {
-            //string url = interopURL;
-            //string uri = "/api/obstacles";
-            //string httpResult;
+            string url = interopURL;
+            string uri = "/api/obstacles";
+            string httpResult;
 
-            //using (CookieWebClient wc = new CookieWebClient(cookies)) // Korzysta z cookies, zapisanych przy logowaniu
-            //{
-            //    wc.BaseAddress = url;
-            //    httpResult = wc.DownloadString(uri);
-            //}
-            //dynamic obstacles = JsonConvert.DeserializeObject(httpResult);
+            using (CookieWebClient wc = new CookieWebClient(cookies)) // Korzysta z cookies, zapisanych przy logowaniu
+            {
+                wc.BaseAddress = url;
+                httpResult = wc.DownloadString(uri);
+            }
+            dynamic obstacles = JsonConvert.DeserializeObject(httpResult);
 
-            //GMapOverlay markersOverlay = new GMapOverlay("marker2332s");
-            //// GMarkerCross marker = new GMarkerCross(new PointLatLng(51, 19));
-            //GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(51, 19), GMarkerGoogleType.blue_dot);
-            //markersOverlay.Markers.Add(marker);
-            //plugin.Host.FPGMapControl.Overlays.Add(markersOverlay);
-            //plugin.Host.FPGMapControl.UpdateMarkerLocalPosition(marker);
+            // Dane do testów bez konieczności łączenia z serwerem
+            //  string jsonDataObstacles = "{'stationary_obstacles': [{'latitude': 38.14792, 'cylinder_height': 200.0, 'cylinder_radius': 150.0, 'longitude': -76.427995}, {'latitude': 38.145823, 'cylinder_height': 300.0, 'cylinder_radius': 50.0, 'longitude': -76.422396}], 'moving_obstacles': [{'latitude': 38.14231360808151, 'sphere_radius': 50.0, 'altitude_msl': 269.53771210358616, 'longitude': -76.42518343430758}]}";
+            //  dynamic obstacles = JsonConvert.DeserializeObject(jsonDataObstacles);
 
-            string jsonDataObstacles = "{'stationary_obstacles': [{'latitude': 38.14792, 'cylinder_height': 200.0, 'cylinder_radius': 150.0, 'longitude': -76.427995}, {'latitude': 38.145823, 'cylinder_height': 300.0, 'cylinder_radius': 50.0, 'longitude': -76.422396}], 'moving_obstacles': [{'latitude': 38.14231360808151, 'sphere_radius': 50.0, 'altitude_msl': 269.53771210358616, 'longitude': -76.42518343430758}]}";
-            dynamic obstacles = JsonConvert.DeserializeObject(jsonDataObstacles);
-          //  GMapOverlay obstaclesOverlay = new GMapOverlay("Obstacles");
-            
             foreach (var stationaryObstacle in obstacles.stationary_obstacles)
             {
                 double lat = stationaryObstacle.latitude;
@@ -242,11 +228,6 @@ namespace Telemetria
                 marker.ToolTipText = alt.ToString() + "m";
             }
             plugin.Host.FPGMapControl.Position = new PointLatLng(38.144727, -76.428007);
-
-            //foreach (GMapOverlay ov in plugin.Host.FPGMapControl.Overlays)
-            //    textBoxHTTPResult.Text += ov.ToString();
-            //  obstaclesOverlay.Clear();
-            //  obstaclesOverlay.setMap(null);
         }
 
         private void buttonUsunPrzeszkody_Click(object sender, EventArgs e)
@@ -254,24 +235,6 @@ namespace Telemetria
             staticObstaclesOverlay.Clear();
             movingObstaclesOverlay.Clear();
             myMarkersOverlay.Clear();
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-
-            if (e.CloseReason == CloseReason.WindowsShutDown) return;
-
-            // Confirm user wants to close
-            switch (MessageBox.Show(this, "Are you sure you want to close?", "Closing", MessageBoxButtons.YesNo))
-            {
-                case DialogResult.No:
-                    e.Cancel = true;
-                    break;
-                default:
-                    telemetryThreadStop = true;
-                    break;
-            }
         }
 
         private void buttonWyswietlPrzeszkodyRuchome_Click(object sender, EventArgs e) // Korzysta z cookies, zapisanych przy logowaniu
@@ -290,10 +253,13 @@ namespace Telemetria
                         try
                         {
                             wc.BaseAddress = url;
-                          //  httpResult = wc.DownloadString(uri);
-                            string jsonDataObstacles = "{'stationary_obstacles': [{'latitude': 38.14792, 'cylinder_height': 200.0, 'cylinder_radius': 150.0, 'longitude': -76.427995}, {'latitude': 38.145823, 'cylinder_height': 300.0, 'cylinder_radius': 50.0, 'longitude': -76.422396}], 'moving_obstacles': [{'latitude': 38.14231360808151, 'sphere_radius': 50.0, 'altitude_msl': 269.53771210358616, 'longitude': -76.42518343430758}]}";
-                            dynamic obstacles = JsonConvert.DeserializeObject(jsonDataObstacles);
-                         
+                            httpResult = wc.DownloadString(uri);
+                            dynamic obstacles = JsonConvert.DeserializeObject(httpResult);
+
+                            // Dane do testów bez konieczności łączenia z serwerem
+                            //  string jsonDataObstacles = "{'stationary_obstacles': [{'latitude': 38.14792, 'cylinder_height': 200.0, 'cylinder_radius': 150.0, 'longitude': -76.427995}, {'latitude': 38.145823, 'cylinder_height': 300.0, 'cylinder_radius': 50.0, 'longitude': -76.422396}], 'moving_obstacles': [{'latitude': 38.14231360808151, 'sphere_radius': 50.0, 'altitude_msl': 269.53771210358616, 'longitude': -76.42518343430758}]}";
+                            //  dynamic obstacles = JsonConvert.DeserializeObject(jsonDataObstacles);
+
                             foreach (var movingObstacle in obstacles.moving_obstacles)
                             {
                                 double lat = movingObstacle.latitude;
@@ -356,6 +322,24 @@ namespace Telemetria
                 buttonWyswietlPrzeszkodyRuchome.Text = "START";
                 buttonWyswietlPrzeszkodyRuchome.BackColor = Color.Green;
                 ruchomePrzeszkodyThreadStop = true;
+            }
+        }
+
+        // Zamykanie okna pluginu
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            if (e.CloseReason == CloseReason.WindowsShutDown) return;
+
+            // Confirm user wants to close
+            switch (MessageBox.Show(this, "Are you sure you want to close?", "Closing", MessageBoxButtons.YesNo))
+            {
+                case DialogResult.No:
+                    e.Cancel = true;
+                    break;
+                default:
+                    telemetryThreadStop = true;
+                    break;
             }
         }
     }
